@@ -55,15 +55,30 @@ namespace GiftCardFunction
                 Sender imageMaker = new Sender();
                 bool result = imageMaker.EmailSender(email, FindPath(@"\GiftCardFolder\" + ticket + ".jpg"));
 
+                if (result)
+                {
+                   
+                    // Elimina i file nella cartella
+                    string folderPath = FindPath(@"\GiftCardFolder\"); // Sostituisci con il percorso effettivo
+                    DirectoryInfo di = new DirectoryInfo(folderPath);
 
-                return new OkObjectResult("Email Send");
+                    foreach (FileInfo file in di.GetFiles())
+                    {
+                        file.Delete();
+                    }
 
+                    return new OkObjectResult("Email Send");
+                }
+                else
+                {
+                    return new BadRequestObjectResult("Failed to send email");
+                }
             }
             catch (Exception ex)
             {
-                return new BadRequestObjectResult("Failed to send email" + ex.Message);
+                return new BadRequestObjectResult("Failed to send email: " + ex.Message);
             }
-           
+
         }
 
         private static int CastString(string stringParameter)
