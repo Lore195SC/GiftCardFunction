@@ -75,7 +75,7 @@ namespace GiftCardFunction
         {
             string path = Directory.GetCurrentDirectory();
             path += @"\GcBase\" + SelectFile(lan);
-            return File.ReadAllText(path);
+            return path;
         }
     }
 }
