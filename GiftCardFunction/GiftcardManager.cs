@@ -8,6 +8,9 @@ using Microsoft.Extensions.Logging;
 using System.Drawing;
 using System.Diagnostics;
 using FunctionApp;
+using System.IO;
+using System.Net.Sockets;
+using System.Threading;
 
 namespace GiftCardFunction
 {
@@ -25,10 +28,11 @@ namespace GiftCardFunction
             string setDate = Today.ToString("dd-MM-yyyy");
             int trail;
             string email;
+            string ticket;
             try
             {
 
-                string ticket = GetParameter(req, "ticket");
+                ticket = GetParameter(req, "ticket");
                 string numberOfPlayer = GetParameter(req, "player");
                 string lan = GetParameter(req, "lan");
                 trail = CastString(req.Query["trail"]);
@@ -37,7 +41,7 @@ namespace GiftCardFunction
                 var trailData = TrailRepo.GetTrail(trail);
 
                 ImageMaker.DrawText(20, $"{trailData.NameCity.ToUpper()}", $"{trailData.NameTrail.ToUpper()}",
-                    ticket.ToUpper(), swtichMessage(lan, numberOfPlayer, setDate), lan);
+                    ticket.ToUpper(), swtichMessage(lan, numberOfPlayer, setDate), lan, ticket);
                 new OkObjectResult("Image edit");
             }
             catch (Exception ex)
@@ -46,8 +50,11 @@ namespace GiftCardFunction
             }
             try
             {
+
+
                 Sender imageMaker = new Sender();
-                bool result = imageMaker.EmailSender(email, "C:\\Users\\loren\\Downloads\\NewTest2.jpg");
+                bool result = imageMaker.EmailSender(email, FindPath(@"\GiftCardFolder\" + ticket + ".jpg"));
+
 
                 return new OkObjectResult("Email Send");
 
@@ -56,6 +63,7 @@ namespace GiftCardFunction
             {
                 return new BadRequestObjectResult("Failed to send email" + ex.Message);
             }
+           
         }
 
         private static int CastString(string stringParameter)
@@ -99,6 +107,15 @@ namespace GiftCardFunction
 
             var exceptionMsg = $"There is not Ticket Template for Language {lan}";
             throw new Exception(exceptionMsg);
+        }
+
+        private static string FindPath(string LastPartPath)
+
+        {
+            string path = Directory.GetCurrentDirectory();
+
+            return path += LastPartPath;
+
         }
     }
 }

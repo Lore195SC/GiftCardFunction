@@ -9,7 +9,7 @@ namespace GiftCardFunction
     public class ImageMaker
     {
         
-        public static void DrawText(int fontSize, string TrailName, string CityName, string NumberOfPlayer, string Date, string lan)
+        public static void DrawText(int fontSize, string TrailName, string CityName, string NumberOfPlayer, string Date, string lan, string TicketName)
         {
            
             Bitmap img = new Bitmap(ReadFileAsync(lan));
@@ -41,9 +41,16 @@ namespace GiftCardFunction
 
             try
             {
+                string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "GiftCardFolder");
 
-                img.Save("C:\\Users\\loren\\Downloads\\NewTest2.jpg", ImageFormat.Jpeg);
-               
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                string imagePath = Path.Combine(directoryPath, TicketName+".jpg");
+                img.Save(imagePath, ImageFormat.Jpeg);
+
                 Console.WriteLine("Immagine salvata con successo.");
 
 
