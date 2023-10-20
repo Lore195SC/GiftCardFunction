@@ -56,6 +56,7 @@ namespace GiftCardFunction
             }
             catch (Exception ex) 
             { 
+
             return new  BadRequestObjectResult("file not Downloded" + ex.Message);
             
             }
