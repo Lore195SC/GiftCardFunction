@@ -5,34 +5,26 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System.Drawing;
-using System.Diagnostics;
-
 using System.IO;
-using System.Net.Sockets;
-using System.Threading;
 
 namespace GiftCardFunction
 {
     public static class GiftcardManager
     {
-
+        private static ILogger _log;
 
         [FunctionName("GiftcardManager")]
-
-
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-            ILogger _log)
+            ILogger log)
 
         {
+            _log = log;
             _log.LogInformation("C# HTTP trigger function processed a request.");
 
+            ManageFolder();
 
-            DateTime Today = DateTime.Now.Date.AddYears(1);
-            string setDate = Today.ToString("dd-MM-yyyy");
-
-
+            string vailidityDate = DateTime.Now.Date.AddYears(1).ToString("dd-MM-yyyy");
             string ticket = GetParameter(req, "ticket");
             string numberOfPlayer = GetParameter(req, "player");
             string lan = GetParameter(req, "lan");
@@ -40,33 +32,39 @@ namespace GiftCardFunction
 
             var trailData = TrailRepo.GetTrail(trail);
 
-            ImageMaker.DrawTextSafe(20, $"{trailData.NameCity.ToUpper()}", $"{trailData.NameTrail.ToUpper()}",
-                ticket.ToUpper(), swtichMessage(lan, numberOfPlayer, setDate), lan, ticket);
-            
+            ImageMaker.DrawTextSafe(22, $"{trailData.NameCity.ToUpper()}", $"{trailData.NameTrail.ToUpper()}",
+                ticket.ToUpper(), swtichMessage(lan, numberOfPlayer, vailidityDate), lan, ticket);
+
             TicketOnFileTXT.SaveTicket(FindPath(@"\Ticket.txt"), ticket);
 
-            new OkObjectResult("Image edit and saved");
             try
             {
-
                 Downloder Dwn = new Downloder();
-                new OkObjectResult("Image send");
                 return Dwn.DownloadImg(FindPath(@"\GiftCardFolder\" + ticket + ".jpg"));
 
             }
-            catch (Exception ex) 
-            { 
-
-            return new  BadRequestObjectResult("file not Downloded" + ex.Message);
-            
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult("file not Downloded" + ex.Message);
             }
-            
 
-            AfterSending As = new AfterSending();
-            As.DeleteFolder(FindPath(@"\GiftCardFolder\"));
+        }
 
-            return new OkObjectResult("Image edit");
+        private static void ManageFolder()
+        {
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "GiftCardFolder");
+            Directory.CreateDirectory(path);
+            DirectoryInfo di = new DirectoryInfo(path);
 
+            foreach (FileInfo file in di.GetFiles())
+            {
+                // is file older than one hour
+                if (DateTime.UtcNow.Subtract(file.CreationTime.ToUniversalTime()).TotalMinutes > 60)
+                {
+                    _log.LogInformation($"Trying to delete file {file.Name} from {DateTime.UtcNow}");
+                    file.Delete();
+                }
+            }
         }
 
         private static int CastString(string stringParameter)

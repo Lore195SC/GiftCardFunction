@@ -68,7 +68,10 @@ namespace GiftCardFunction
                 "Emilia"),
            new Trail(24,
                 "Sato Code Ascona",
-                "Enzo's box")
+                "Enzo's box"),
+           new Trail(25,
+               "Sato Code Monza",
+               "FrogLover")
 
 
 

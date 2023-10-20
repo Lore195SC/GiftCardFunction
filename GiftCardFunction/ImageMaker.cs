@@ -1,30 +1,28 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.VisualBasic;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Threading;
 
 namespace GiftCardFunction
 {
     public class ImageMaker
     {
 
-
-
         public static void DrawTextSafe(int fontSize, string TrailName, string CityName, string NumberOfPlayer, string Date, string lan, string TicketName)
         {
             string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "GiftCardFolder");
-
+            
             using (Bitmap img = new Bitmap(GetFilePath(lan)))
             {
                 using (Graphics Gimg = Graphics.FromImage(img))
                 {
-                    Font MainimgFont = new Font("Exo2.0-Black", fontSize, FontStyle.Bold);
-                    Font LowerimgFont = new Font("Exo2.0-Black", 10);
-                    Font CityFont = new Font("Exo2.0-Black", 15, FontStyle.Bold);
+                  
+                    var myFonts = new System.Drawing.Text.PrivateFontCollection();
+                    myFonts.AddFontFile(Directory.GetCurrentDirectory() + @"\Font\Exo2.0-SemiBold.otf");
+                    Font MainimgFont = new Font(myFonts.Families[0], fontSize, FontStyle.Bold);
+                    Font LowerimgFont = new Font(myFonts.Families[0], 12);
+                    Font CityFont = new Font(myFonts.Families[0], 15, FontStyle.Bold);
                     Color CustomColor = Color.FromArgb(75, 168, 175);
                     SolidBrush ColorMainWhite = new SolidBrush(Color.White);
                     SolidBrush ColorCityNameBlu = new SolidBrush(CustomColor);
