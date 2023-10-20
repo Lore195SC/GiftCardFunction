@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Drawing;
 using System.Diagnostics;
-using FunctionApp;
+
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
@@ -16,68 +16,55 @@ namespace GiftCardFunction
 {
     public static class GiftcardManager
     {
+
+
         [FunctionName("GiftcardManager")]
+
+
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
             ILogger _log)
+
         {
             _log.LogInformation("C# HTTP trigger function processed a request.");
 
 
             DateTime Today = DateTime.Now.Date.AddYears(1);
             string setDate = Today.ToString("dd-MM-yyyy");
-            int trail;
-            string email;
-            string ticket;
+
+
+            string ticket = GetParameter(req, "ticket");
+            string numberOfPlayer = GetParameter(req, "player");
+            string lan = GetParameter(req, "lan");
+            int trail = CastString(req.Query["trail"]);
+
+            var trailData = TrailRepo.GetTrail(trail);
+
+            ImageMaker.DrawTextSafe(20, $"{trailData.NameCity.ToUpper()}", $"{trailData.NameTrail.ToUpper()}",
+                ticket.ToUpper(), swtichMessage(lan, numberOfPlayer, setDate), lan, ticket);
+            
+            TicketOnFileTXT.SaveTicket(FindPath(@"\Ticket.txt"), ticket);
+
+            new OkObjectResult("Image edit and saved");
             try
             {
 
-                ticket = GetParameter(req, "ticket");
-                string numberOfPlayer = GetParameter(req, "player");
-                string lan = GetParameter(req, "lan");
-                trail = CastString(req.Query["trail"]);
-                email = GetParameter(req, "email");
+                Downloder Dwn = new Downloder();
+                new OkObjectResult("Image send");
+                return Dwn.DownloadImg(FindPath(@"\GiftCardFolder\" + ticket + ".jpg"));
 
-                var trailData = TrailRepo.GetTrail(trail);
-
-                ImageMaker.DrawText(20, $"{trailData.NameCity.ToUpper()}", $"{trailData.NameTrail.ToUpper()}",
-                    ticket.ToUpper(), swtichMessage(lan, numberOfPlayer, setDate), lan, ticket);
-                new OkObjectResult("Image edit");
             }
-            catch (Exception ex)
-            {
-                return new BadRequestObjectResult("Failed to read Parameters. " + ex.Message);
+            catch (Exception ex) 
+            { 
+            return new  BadRequestObjectResult("file not Downloded" + ex.Message);
+            
             }
-            try
-            {
+            
 
+            AfterSending As = new AfterSending();
+            As.DeleteFolder(FindPath(@"\GiftCardFolder\"));
 
-                Sender imageMaker = new Sender();
-                bool result = imageMaker.EmailSender(email, FindPath(@"\GiftCardFolder\" + ticket + ".jpg"));
-
-                if (result)
-                {
-                   
-                    // Elimina i file nella cartella
-                    string folderPath = FindPath(@"\GiftCardFolder\"); // Sostituisci con il percorso effettivo
-                    DirectoryInfo di = new DirectoryInfo(folderPath);
-
-                    foreach (FileInfo file in di.GetFiles())
-                    {
-                        file.Delete();
-                    }
-
-                    return new OkObjectResult("Email Send");
-                }
-                else
-                {
-                    return new BadRequestObjectResult("Failed to send email");
-                }
-            }
-            catch (Exception ex)
-            {
-                return new BadRequestObjectResult("Failed to send email: " + ex.Message);
-            }
+            return new OkObjectResult("Image edit");
 
         }
 
@@ -132,5 +119,7 @@ namespace GiftCardFunction
             return path += LastPartPath;
 
         }
+
+
     }
 }
