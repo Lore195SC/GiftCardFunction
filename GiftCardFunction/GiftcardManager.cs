@@ -24,7 +24,7 @@ namespace GiftCardFunction
 
             ManageFolder();
 
-         
+
             string ticket = GetParameter(req, "ticket");
             string numberOfPlayer = GetParameter(req, "player");
             string lan = GetParameter(req, "lan");
@@ -94,30 +94,24 @@ namespace GiftCardFunction
             return result;
         }
 
-        private static string SwitchMessage(string lan, string numberOfPlayer )
+        private static string SwitchMessage(string lan, string numberOfPlayer)
         {
             string vailidityDate;
-
-            if(lan== "de" ) 
-            {
-                vailidityDate = DateTime.Now.Date.AddYears(1).ToString("dd.MM.yyyy");
-            }
-            else
-            {
-                vailidityDate = DateTime.Now.Date.AddYears(1).ToString("dd/MM/yyyy");
-            }
 
             switch (lan)
             {
                 case "it":
+                    vailidityDate = DateTime.Now.Date.AddYears(1).ToString("dd/MM/yyyy");
                     return $"valido per {numberOfPlayer} persone \n fino al {vailidityDate}";
                 case "de":
+                    vailidityDate = DateTime.Now.Date.AddYears(1).ToString("dd.MM.yyyy");
                     return $"Gültig für {numberOfPlayer} Personen\n bis zum {vailidityDate}";
                 default:
+                    vailidityDate = DateTime.Now.Date.AddYears(1).ToString("MM/dd/yyyy");
                     return $"Valid for {numberOfPlayer} players\n until {vailidityDate}";
             }
 
-        
+
 
         }
 
