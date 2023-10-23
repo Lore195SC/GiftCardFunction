@@ -9,7 +9,7 @@ namespace GiftCardFunction
         {
             var stream = File.OpenRead(path);
             return new FileStreamResult(stream, "application/octet-stream")
-            { FileDownloadName = "Hero.jpg" };
+            { FileDownloadName = "GiftCard.jpg" };
         }
     }
 }

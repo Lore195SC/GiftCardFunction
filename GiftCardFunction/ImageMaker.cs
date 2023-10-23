@@ -34,7 +34,7 @@ namespace GiftCardFunction
 
                     PointF PositionTrailName = new PointF(2050, 540);
                     PointF PositionTrailCity = new PointF(2050, 680);
-                    PointF PostitionPlayer = new PointF(2050, 1420);
+                    PointF PostitionPlayer = new PointF(2050, 1380);
                     PointF PositionDate = new PointF(2050, 1600);
 
                     Gimg.DrawString(TrailName, MainimgFont, ColorMainWhite, PositionTrailName, centerAlignment);

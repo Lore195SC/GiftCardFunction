@@ -24,7 +24,7 @@ namespace GiftCardFunction
 
             ManageFolder();
 
-            string vailidityDate = DateTime.Now.Date.AddYears(1).ToString("dd-MM-yyyy");
+         
             string ticket = GetParameter(req, "ticket");
             string numberOfPlayer = GetParameter(req, "player");
             string lan = GetParameter(req, "lan");
@@ -33,7 +33,7 @@ namespace GiftCardFunction
             var trailData = TrailRepo.GetTrail(trail);
 
             ImageMaker.DrawTextSafe(22, $"{trailData.NameCity.ToUpper()}", $"{trailData.NameTrail.ToUpper()}",
-                ticket.ToUpper(), swtichMessage(lan, numberOfPlayer, vailidityDate), lan, ticket);
+                ticket.ToUpper(), swtichMessage(lan, numberOfPlayer), lan, ticket);
 
             TicketOnFileTXT.SaveTicket(FindPath(@"\Ticket.txt"), ticket);
 
@@ -94,17 +94,29 @@ namespace GiftCardFunction
             return result;
         }
 
-        private static string swtichMessage(string lan, string numberOfPlayer, string setDate)
+        private static string swtichMessage(string lan, string numberOfPlayer )
         {
+            string vailidityDate;
+
+            if(lan== "it") 
+            {
+            vailidityDate = DateTime.Now.Date.AddYears(1).ToString("dd/MM/yyyy");
+            }
+            else
+            {
+                vailidityDate = DateTime.Now.Date.AddYears(1).ToString("dd.MM.yyyy");
+            }
+
             switch (lan)
             {
                 case "it":
-                    return $"valido per {numberOfPlayer} persone \n fino al {setDate}";
+                    return $"valido per {numberOfPlayer} persone \n fino al {vailidityDate}";
                 case "de":
-                    return $"Gültig für {numberOfPlayer} Personen\n bis zum {setDate}";
+                    return $"Gültig für {numberOfPlayer} Personen\n bis zum {vailidityDate}";
                 case "en":
-                    return $"Valid for {numberOfPlayer} players\n until {setDate}";
+                    return $"Valid for {numberOfPlayer} players\n until {vailidityDate}";
             }
+
 
             var exceptionMsg = $"There is not Ticket Template for Language {lan}";
             throw new Exception(exceptionMsg);
