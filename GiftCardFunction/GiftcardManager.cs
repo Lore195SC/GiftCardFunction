@@ -32,8 +32,8 @@ namespace GiftCardFunction
 
             var trailData = TrailRepo.GetTrail(trail);
 
-            ImageMaker.DrawTextSafe(22, $"{trailData.NameCity.ToUpper()}", $"{trailData.NameTrail.ToUpper()}",
-                ticket.ToUpper(), swtichMessage(lan, numberOfPlayer), lan, ticket);
+            ImageMaker.DrawText(22, $"{trailData.NameCity.ToUpper()}", $"{trailData.NameTrail.ToUpper()}",
+                ticket.ToUpper(), SwitchMessage(lan, numberOfPlayer), lan, ticket);
 
             TicketOnFileTXT.SaveTicket(FindPath(@"\Ticket.txt"), ticket);
 
@@ -94,17 +94,17 @@ namespace GiftCardFunction
             return result;
         }
 
-        private static string swtichMessage(string lan, string numberOfPlayer )
+        private static string SwitchMessage(string lan, string numberOfPlayer )
         {
             string vailidityDate;
 
-            if(lan== "it") 
+            if(lan== "de" ) 
             {
-            vailidityDate = DateTime.Now.Date.AddYears(1).ToString("dd/MM/yyyy");
+                vailidityDate = DateTime.Now.Date.AddYears(1).ToString("dd.MM.yyyy");
             }
             else
             {
-                vailidityDate = DateTime.Now.Date.AddYears(1).ToString("dd.MM.yyyy");
+                vailidityDate = DateTime.Now.Date.AddYears(1).ToString("dd/MM/yyyy");
             }
 
             switch (lan)
@@ -113,13 +113,12 @@ namespace GiftCardFunction
                     return $"valido per {numberOfPlayer} persone \n fino al {vailidityDate}";
                 case "de":
                     return $"Gültig für {numberOfPlayer} Personen\n bis zum {vailidityDate}";
-                case "en":
+                default:
                     return $"Valid for {numberOfPlayer} players\n until {vailidityDate}";
             }
 
+        
 
-            var exceptionMsg = $"There is not Ticket Template for Language {lan}";
-            throw new Exception(exceptionMsg);
         }
 
         private static string FindPath(string LastPartPath)

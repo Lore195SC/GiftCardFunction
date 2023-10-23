@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -9,7 +8,7 @@ namespace GiftCardFunction
     public class ImageMaker
     {
 
-        public static void DrawTextSafe(int fontSize, string TrailName, string CityName, string NumberOfPlayer, string Date, string lan, string TicketName)
+        public static void DrawText(int fontSize, string TrailName, string CityName, string NumberOfPlayer, string Date, string lan, string TicketName)
         {
             string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "GiftCardFolder");
             
